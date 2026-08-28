@@ -68,6 +68,7 @@ export const getOwnerAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { isInvitedOwner } = await import("@/lib/owner.server");
 
     const { data: mine } = await supabaseAdmin
       .from("user_roles")
@@ -82,14 +83,21 @@ export const getOwnerAccess = createServerFn({ method: "GET" })
       .select("id", { count: "exact", head: true })
       .eq("role", "owner");
 
-    return { isOwner, roles, canClaim: !isOwner && (count ?? 0) === 0 };
+    const canClaim =
+      !isOwner && (count ?? 0) === 0 && (await isInvitedOwner(context.userId, context.claims));
+
+    return { isOwner, roles, canClaim };
   });
 
-/** First-run bootstrap: the first signed-in user may claim ownership once. */
+/**
+ * First-run bootstrap: only a pre-approved (invited) phone number may claim
+ * ownership, and only while no owner exists yet.
+ */
 export const claimOwnership = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { isInvitedOwner } = await import("@/lib/owner.server");
 
     const { count } = await supabaseAdmin
       .from("user_roles")
@@ -97,6 +105,10 @@ export const claimOwnership = createServerFn({ method: "POST" })
       .eq("role", "owner");
 
     if ((count ?? 0) > 0) throw new Error("Ownership has already been claimed.");
+
+    if (!(await isInvitedOwner(context.userId, context.claims))) {
+      throw new Error("This account isn't approved for owner access.");
+    }
 
     const { error } = await supabaseAdmin
       .from("user_roles")
@@ -108,6 +120,7 @@ export const claimOwnership = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
 
 export const ownerListOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
