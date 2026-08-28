@@ -56,74 +56,153 @@ function OwnerSettings() {
     setForm((prev) => (prev ? { ...prev, [key]: value } : prev));
 
   return (
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="space-y-4 p-4">
+          <div className="flex items-center justify-between rounded-lg border border-border p-3">
+            <div>
+              <p className="font-medium">Accepting orders</p>
+              <p className="text-sm text-muted-foreground">Turn off to pause new orders.</p>
+            </div>
+            <Switch checked={form.isOpen} onCheckedChange={(v) => set("isOpen", v)} />
+          </div>
+
+          <Field label="Restaurant name">
+            <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
+          </Field>
+          <Field label="Tagline">
+            <Textarea
+              value={form.tagline ?? ""}
+              onChange={(e) => set("tagline", e.target.value || null)}
+              rows={2}
+            />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Phone">
+              <Input
+                value={form.phone ?? ""}
+                onChange={(e) => set("phone", e.target.value || null)}
+              />
+            </Field>
+            <Field label="Email">
+              <Input
+                value={form.email ?? ""}
+                onChange={(e) => set("email", e.target.value || null)}
+              />
+            </Field>
+          </div>
+          <Field label="Address">
+            <Input
+              value={form.addressLine ?? ""}
+              onChange={(e) => set("addressLine", e.target.value || null)}
+            />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="City">
+              <Input value={form.city ?? ""} onChange={(e) => set("city", e.target.value || null)} />
+            </Field>
+            <Field label="Country">
+              <Input
+                value={form.country ?? ""}
+                onChange={(e) => set("country", e.target.value || null)}
+              />
+            </Field>
+          </div>
+
+          <Button
+            disabled={saving}
+            onClick={async () => {
+              setSaving(true);
+              try {
+                await updateSettings({ data: form });
+                await queryClient.invalidateQueries({ queryKey: ["owner-settings"] });
+                toast.success("Settings saved");
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : "Couldn't save settings");
+              } finally {
+                setSaving(false);
+              }
+            }}
+          >
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Save changes
+          </Button>
+        </CardContent>
+      </Card>
+
+      <OwnerPasswordCard />
+    </div>
+  );
+}
+
+/** Lets the owner replace the temporary password with one of their own. */
+function OwnerPasswordCard() {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  return (
     <Card>
       <CardContent className="space-y-4 p-4">
-        <div className="flex items-center justify-between rounded-lg border border-border p-3">
-          <div>
-            <p className="font-medium">Accepting orders</p>
-            <p className="text-sm text-muted-foreground">Turn off to pause new orders.</p>
-          </div>
-          <Switch checked={form.isOpen} onCheckedChange={(v) => set("isOpen", v)} />
+        <div>
+          <p className="font-medium">Change password</p>
+          <p className="text-sm text-muted-foreground">
+            Set a new password for your owner account.
+          </p>
         </div>
 
-        <Field label="Restaurant name">
-          <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
-        </Field>
-        <Field label="Tagline">
-          <Textarea
-            value={form.tagline ?? ""}
-            onChange={(e) => set("tagline", e.target.value || null)}
-            rows={2}
-          />
-        </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Phone">
-            <Input value={form.phone ?? ""} onChange={(e) => set("phone", e.target.value || null)} />
-          </Field>
-          <Field label="Email">
-            <Input value={form.email ?? ""} onChange={(e) => set("email", e.target.value || null)} />
-          </Field>
-        </div>
-        <Field label="Address">
-          <Input
-            value={form.addressLine ?? ""}
-            onChange={(e) => set("addressLine", e.target.value || null)}
-          />
-        </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="City">
-            <Input value={form.city ?? ""} onChange={(e) => set("city", e.target.value || null)} />
-          </Field>
-          <Field label="Country">
+          <Field label="New password">
             <Input
-              value={form.country ?? ""}
-              onChange={(e) => set("country", e.target.value || null)}
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Field>
+          <Field label="Confirm new password">
+            <Input
+              type="password"
+              autoComplete="new-password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
             />
           </Field>
         </div>
 
         <Button
-          disabled={saving}
+          disabled={busy}
           onClick={async () => {
-            setSaving(true);
+            if (password.length < 6) {
+              toast.error("Password must be at least 6 characters.");
+              return;
+            }
+            if (password !== confirm) {
+              toast.error("Both passwords must match.");
+              return;
+            }
+            setBusy(true);
             try {
-              await updateSettings({ data: form });
-              await queryClient.invalidateQueries({ queryKey: ["owner-settings"] });
-              toast.success("Settings saved");
+              const { error } = await supabase.auth.updateUser({ password });
+              if (error) throw error;
+              setPassword("");
+              setConfirm("");
+              toast.success("Password updated");
             } catch (error) {
-              toast.error(error instanceof Error ? error.message : "Couldn't save settings");
+              toast.error(error instanceof Error ? error.message : "Couldn't update password");
             } finally {
-              setSaving(false);
+              setBusy(false);
             }
           }}
         >
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Save changes
+          {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Update password
         </Button>
       </CardContent>
     </Card>
   );
 }
+
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
