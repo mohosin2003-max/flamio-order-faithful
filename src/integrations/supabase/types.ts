@@ -345,6 +345,27 @@ export type Database = {
         }
         Relationships: []
       }
+      owner_invites: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          phone: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          phone: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          phone?: string
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           alt: string
