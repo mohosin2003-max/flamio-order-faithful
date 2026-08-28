@@ -14,7 +14,277 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      customer_addresses: {
+        Row: {
+          address_line: string
+          area: string | null
+          created_at: string
+          delivery_notes: string | null
+          full_name: string
+          id: string
+          is_default: boolean
+          label: string | null
+          landmark: string | null
+          phone: string
+          updated_at: string
+          user_id: string
+          zone_id: string | null
+        }
+        Insert: {
+          address_line: string
+          area?: string | null
+          created_at?: string
+          delivery_notes?: string | null
+          full_name: string
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          landmark?: string | null
+          phone: string
+          updated_at?: string
+          user_id: string
+          zone_id?: string | null
+        }
+        Update: {
+          address_line?: string
+          area?: string | null
+          created_at?: string
+          delivery_notes?: string | null
+          full_name?: string
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          landmark?: string | null
+          phone?: string
+          updated_at?: string
+          user_id?: string
+          zone_id?: string | null
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          product_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          product_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          product_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_read: boolean
+          order_code: string | null
+          order_id: string | null
+          status: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          order_code?: string | null
+          order_id?: string | null
+          status?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          order_code?: string | null
+          order_id?: string | null
+          status?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          order_id: string
+          product_id: string
+          product_name: string
+          product_slug: string
+          quantity: number
+          unit_price: number
+          variant_id: string | null
+          variant_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          order_id: string
+          product_id: string
+          product_name: string
+          product_slug: string
+          quantity: number
+          unit_price: number
+          variant_id?: string | null
+          variant_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          order_id?: string
+          product_id?: string
+          product_name?: string
+          product_slug?: string
+          quantity?: number
+          unit_price?: number
+          variant_id?: string | null
+          variant_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          address_line: string | null
+          area: string | null
+          code: string
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          delivery_charge: number
+          delivery_notes: string | null
+          discount: number
+          estimated_time: string | null
+          fulfillment: string
+          id: string
+          landmark: string | null
+          payment_label: string
+          payment_method: string
+          pickup_note: string | null
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string | null
+          zone_id: string | null
+          zone_name: string | null
+        }
+        Insert: {
+          address_line?: string | null
+          area?: string | null
+          code: string
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          delivery_charge?: number
+          delivery_notes?: string | null
+          discount?: number
+          estimated_time?: string | null
+          fulfillment: string
+          id?: string
+          landmark?: string | null
+          payment_label: string
+          payment_method: string
+          pickup_note?: string | null
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string | null
+          zone_id?: string | null
+          zone_name?: string | null
+        }
+        Update: {
+          address_line?: string | null
+          area?: string | null
+          code?: string
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_charge?: number
+          delivery_notes?: string | null
+          discount?: number
+          estimated_time?: string | null
+          fulfillment?: string
+          id?: string
+          landmark?: string | null
+          payment_label?: string
+          payment_method?: string
+          pickup_note?: string | null
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string | null
+          zone_id?: string | null
+          zone_name?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
