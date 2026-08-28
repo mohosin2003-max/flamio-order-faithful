@@ -10,33 +10,287 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthenticatedOwnerRouteImport } from './routes/_authenticated/owner'
+import { Route as MenuIndexRouteImport } from './routes/menu.index'
+import { Route as MenuProductSlugRouteImport } from './routes/menu.$productSlug'
+import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
+import { Route as TrackOrderIdRouteImport } from './routes/track.$orderId'
+import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authenticated/account.index'
+import { Route as AuthenticatedAccountAddressesRouteImport } from './routes/_authenticated/account.addresses'
+import { Route as AuthenticatedAccountFavoritesRouteImport } from './routes/_authenticated/account.favorites'
+import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated/account.notifications'
+import { Route as AuthenticatedAccountOrdersRouteImport } from './routes/_authenticated/account.orders'
+import { Route as AuthenticatedOwnerIndexRouteImport } from './routes/_authenticated/owner.index'
+import { Route as AuthenticatedOwnerMenuRouteImport } from './routes/_authenticated/owner.menu'
+import { Route as AuthenticatedOwnerOrdersRouteImport } from './routes/_authenticated/owner.orders'
+import { Route as AuthenticatedOwnerSettingsRouteImport } from './routes/_authenticated/owner.settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedOwnerRoute = AuthenticatedOwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const MenuIndexRoute = MenuIndexRouteImport.update({
+  id: '/menu/',
+  path: '/menu/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenuProductSlugRoute = MenuProductSlugRouteImport.update({
+  id: '/menu/$productSlug',
+  path: '/menu/$productSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderOrderIdRoute = OrderOrderIdRouteImport.update({
+  id: '/order/$orderId',
+  path: '/order/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackOrderIdRoute = TrackOrderIdRouteImport.update({
+  id: '/track/$orderId',
+  path: '/track/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAccountIndexRoute =
+  AuthenticatedAccountIndexRouteImport.update({
+    id: '/account/',
+    path: '/account/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAccountAddressesRoute =
+  AuthenticatedAccountAddressesRouteImport.update({
+    id: '/account/addresses',
+    path: '/account/addresses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAccountFavoritesRoute =
+  AuthenticatedAccountFavoritesRouteImport.update({
+    id: '/account/favorites',
+    path: '/account/favorites',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAccountNotificationsRoute =
+  AuthenticatedAccountNotificationsRouteImport.update({
+    id: '/account/notifications',
+    path: '/account/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAccountOrdersRoute =
+  AuthenticatedAccountOrdersRouteImport.update({
+    id: '/account/orders',
+    path: '/account/orders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOwnerIndexRoute = AuthenticatedOwnerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedOwnerRoute,
+} as any)
+const AuthenticatedOwnerMenuRoute = AuthenticatedOwnerMenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => AuthenticatedOwnerRoute,
+} as any)
+const AuthenticatedOwnerOrdersRoute =
+  AuthenticatedOwnerOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedOwnerRoute,
+  } as any)
+const AuthenticatedOwnerSettingsRoute =
+  AuthenticatedOwnerSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedOwnerRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/owner': typeof AuthenticatedOwnerRouteWithChildren
+  '/menu/$productSlug': typeof MenuProductSlugRoute
+  '/order/$orderId': typeof OrderOrderIdRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
+  '/menu/': typeof MenuIndexRoute
+  '/account/addresses': typeof AuthenticatedAccountAddressesRoute
+  '/account/favorites': typeof AuthenticatedAccountFavoritesRoute
+  '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/account/orders': typeof AuthenticatedAccountOrdersRoute
+  '/owner/menu': typeof AuthenticatedOwnerMenuRoute
+  '/owner/orders': typeof AuthenticatedOwnerOrdersRoute
+  '/owner/settings': typeof AuthenticatedOwnerSettingsRoute
+  '/account/': typeof AuthenticatedAccountIndexRoute
+  '/owner/': typeof AuthenticatedOwnerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/menu/$productSlug': typeof MenuProductSlugRoute
+  '/order/$orderId': typeof OrderOrderIdRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
+  '/menu': typeof MenuIndexRoute
+  '/account/addresses': typeof AuthenticatedAccountAddressesRoute
+  '/account/favorites': typeof AuthenticatedAccountFavoritesRoute
+  '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/account/orders': typeof AuthenticatedAccountOrdersRoute
+  '/owner/menu': typeof AuthenticatedOwnerMenuRoute
+  '/owner/orders': typeof AuthenticatedOwnerOrdersRoute
+  '/owner/settings': typeof AuthenticatedOwnerSettingsRoute
+  '/account': typeof AuthenticatedAccountIndexRoute
+  '/owner': typeof AuthenticatedOwnerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/_authenticated/owner': typeof AuthenticatedOwnerRouteWithChildren
+  '/menu/$productSlug': typeof MenuProductSlugRoute
+  '/order/$orderId': typeof OrderOrderIdRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
+  '/menu/': typeof MenuIndexRoute
+  '/_authenticated/account/addresses': typeof AuthenticatedAccountAddressesRoute
+  '/_authenticated/account/favorites': typeof AuthenticatedAccountFavoritesRoute
+  '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
+  '/_authenticated/account/orders': typeof AuthenticatedAccountOrdersRoute
+  '/_authenticated/owner/menu': typeof AuthenticatedOwnerMenuRoute
+  '/_authenticated/owner/orders': typeof AuthenticatedOwnerOrdersRoute
+  '/_authenticated/owner/settings': typeof AuthenticatedOwnerSettingsRoute
+  '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
+  '/_authenticated/owner/': typeof AuthenticatedOwnerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/cart'
+    | '/checkout'
+    | '/contact'
+    | '/forgot-password'
+    | '/owner'
+    | '/menu/$productSlug'
+    | '/order/$orderId'
+    | '/track/$orderId'
+    | '/menu/'
+    | '/account/addresses'
+    | '/account/favorites'
+    | '/account/notifications'
+    | '/account/orders'
+    | '/owner/menu'
+    | '/owner/orders'
+    | '/owner/settings'
+    | '/account/'
+    | '/owner/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/cart'
+    | '/checkout'
+    | '/contact'
+    | '/forgot-password'
+    | '/menu/$productSlug'
+    | '/order/$orderId'
+    | '/track/$orderId'
+    | '/menu'
+    | '/account/addresses'
+    | '/account/favorites'
+    | '/account/notifications'
+    | '/account/orders'
+    | '/owner/menu'
+    | '/owner/orders'
+    | '/owner/settings'
+    | '/account'
+    | '/owner'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/cart'
+    | '/checkout'
+    | '/contact'
+    | '/forgot-password'
+    | '/_authenticated/owner'
+    | '/menu/$productSlug'
+    | '/order/$orderId'
+    | '/track/$orderId'
+    | '/menu/'
+    | '/_authenticated/account/addresses'
+    | '/_authenticated/account/favorites'
+    | '/_authenticated/account/notifications'
+    | '/_authenticated/account/orders'
+    | '/_authenticated/owner/menu'
+    | '/_authenticated/owner/orders'
+    | '/_authenticated/owner/settings'
+    | '/_authenticated/account/'
+    | '/_authenticated/owner/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  CartRoute: typeof CartRoute
+  CheckoutRoute: typeof CheckoutRoute
+  ContactRoute: typeof ContactRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  MenuProductSlugRoute: typeof MenuProductSlugRoute
+  OrderOrderIdRoute: typeof OrderOrderIdRoute
+  TrackOrderIdRoute: typeof TrackOrderIdRoute
+  MenuIndexRoute: typeof MenuIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +302,200 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/owner': {
+      id: '/_authenticated/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof AuthenticatedOwnerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/menu/': {
+      id: '/menu/'
+      path: '/menu'
+      fullPath: '/menu/'
+      preLoaderRoute: typeof MenuIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/menu/$productSlug': {
+      id: '/menu/$productSlug'
+      path: '/menu/$productSlug'
+      fullPath: '/menu/$productSlug'
+      preLoaderRoute: typeof MenuProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order/$orderId': {
+      id: '/order/$orderId'
+      path: '/order/$orderId'
+      fullPath: '/order/$orderId'
+      preLoaderRoute: typeof OrderOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track/$orderId': {
+      id: '/track/$orderId'
+      path: '/track/$orderId'
+      fullPath: '/track/$orderId'
+      preLoaderRoute: typeof TrackOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/account/': {
+      id: '/_authenticated/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AuthenticatedAccountIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/account/addresses': {
+      id: '/_authenticated/account/addresses'
+      path: '/account/addresses'
+      fullPath: '/account/addresses'
+      preLoaderRoute: typeof AuthenticatedAccountAddressesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/account/favorites': {
+      id: '/_authenticated/account/favorites'
+      path: '/account/favorites'
+      fullPath: '/account/favorites'
+      preLoaderRoute: typeof AuthenticatedAccountFavoritesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/account/notifications': {
+      id: '/_authenticated/account/notifications'
+      path: '/account/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AuthenticatedAccountNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/account/orders': {
+      id: '/_authenticated/account/orders'
+      path: '/account/orders'
+      fullPath: '/account/orders'
+      preLoaderRoute: typeof AuthenticatedAccountOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owner/': {
+      id: '/_authenticated/owner/'
+      path: '/'
+      fullPath: '/owner/'
+      preLoaderRoute: typeof AuthenticatedOwnerIndexRouteImport
+      parentRoute: typeof AuthenticatedOwnerRoute
+    }
+    '/_authenticated/owner/menu': {
+      id: '/_authenticated/owner/menu'
+      path: '/menu'
+      fullPath: '/owner/menu'
+      preLoaderRoute: typeof AuthenticatedOwnerMenuRouteImport
+      parentRoute: typeof AuthenticatedOwnerRoute
+    }
+    '/_authenticated/owner/orders': {
+      id: '/_authenticated/owner/orders'
+      path: '/orders'
+      fullPath: '/owner/orders'
+      preLoaderRoute: typeof AuthenticatedOwnerOrdersRouteImport
+      parentRoute: typeof AuthenticatedOwnerRoute
+    }
+    '/_authenticated/owner/settings': {
+      id: '/_authenticated/owner/settings'
+      path: '/settings'
+      fullPath: '/owner/settings'
+      preLoaderRoute: typeof AuthenticatedOwnerSettingsRouteImport
+      parentRoute: typeof AuthenticatedOwnerRoute
+    }
   }
 }
 
+interface AuthenticatedOwnerRouteChildren {
+  AuthenticatedOwnerMenuRoute: typeof AuthenticatedOwnerMenuRoute
+  AuthenticatedOwnerOrdersRoute: typeof AuthenticatedOwnerOrdersRoute
+  AuthenticatedOwnerSettingsRoute: typeof AuthenticatedOwnerSettingsRoute
+  AuthenticatedOwnerIndexRoute: typeof AuthenticatedOwnerIndexRoute
+}
+
+const AuthenticatedOwnerRouteChildren: AuthenticatedOwnerRouteChildren = {
+  AuthenticatedOwnerMenuRoute: AuthenticatedOwnerMenuRoute,
+  AuthenticatedOwnerOrdersRoute: AuthenticatedOwnerOrdersRoute,
+  AuthenticatedOwnerSettingsRoute: AuthenticatedOwnerSettingsRoute,
+  AuthenticatedOwnerIndexRoute: AuthenticatedOwnerIndexRoute,
+}
+
+const AuthenticatedOwnerRouteWithChildren =
+  AuthenticatedOwnerRoute._addFileChildren(AuthenticatedOwnerRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedOwnerRoute: typeof AuthenticatedOwnerRouteWithChildren
+  AuthenticatedAccountAddressesRoute: typeof AuthenticatedAccountAddressesRoute
+  AuthenticatedAccountFavoritesRoute: typeof AuthenticatedAccountFavoritesRoute
+  AuthenticatedAccountNotificationsRoute: typeof AuthenticatedAccountNotificationsRoute
+  AuthenticatedAccountOrdersRoute: typeof AuthenticatedAccountOrdersRoute
+  AuthenticatedAccountIndexRoute: typeof AuthenticatedAccountIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedOwnerRoute: AuthenticatedOwnerRouteWithChildren,
+  AuthenticatedAccountAddressesRoute: AuthenticatedAccountAddressesRoute,
+  AuthenticatedAccountFavoritesRoute: AuthenticatedAccountFavoritesRoute,
+  AuthenticatedAccountNotificationsRoute:
+    AuthenticatedAccountNotificationsRoute,
+  AuthenticatedAccountOrdersRoute: AuthenticatedAccountOrdersRoute,
+  AuthenticatedAccountIndexRoute: AuthenticatedAccountIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  CartRoute: CartRoute,
+  CheckoutRoute: CheckoutRoute,
+  ContactRoute: ContactRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  MenuProductSlugRoute: MenuProductSlugRoute,
+  OrderOrderIdRoute: OrderOrderIdRoute,
+  TrackOrderIdRoute: TrackOrderIdRoute,
+  MenuIndexRoute: MenuIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
