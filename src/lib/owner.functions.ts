@@ -68,7 +68,6 @@ export const getOwnerAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { isInvitedOwner } = await import("@/lib/owner.server");
 
     const { data: mine } = await supabaseAdmin
       .from("user_roles")
@@ -83,21 +82,14 @@ export const getOwnerAccess = createServerFn({ method: "GET" })
       .select("id", { count: "exact", head: true })
       .eq("role", "owner");
 
-    const canClaim =
-      !isOwner && (count ?? 0) === 0 && (await isInvitedOwner(context.userId, context.claims));
-
-    return { isOwner, roles, canClaim };
+    return { isOwner, roles, canClaim: !isOwner && (count ?? 0) === 0 };
   });
 
-/**
- * First-run bootstrap: only a pre-approved (invited) phone number may claim
- * ownership, and only while no owner exists yet.
- */
+/** First-run bootstrap: the first signed-in user may claim ownership once. */
 export const claimOwnership = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { isInvitedOwner } = await import("@/lib/owner.server");
 
     const { count } = await supabaseAdmin
       .from("user_roles")
@@ -105,10 +97,6 @@ export const claimOwnership = createServerFn({ method: "POST" })
       .eq("role", "owner");
 
     if ((count ?? 0) > 0) throw new Error("Ownership has already been claimed.");
-
-    if (!(await isInvitedOwner(context.userId, context.claims))) {
-      throw new Error("This account isn't approved for owner access.");
-    }
 
     const { error } = await supabaseAdmin
       .from("user_roles")
@@ -120,7 +108,6 @@ export const claimOwnership = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
-
 
 export const ownerListOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -310,9 +297,8 @@ export const ownerSaveCategory = createServerFn({ method: "POST" })
   });
 
 /**
- * Deletes a category. When it still holds items the caller must either move
- * them to another category (`reassignToCategoryId`) or explicitly confirm
- * deleting the items too (`deleteItems`).
+ * Deletes a category. Items are never deleted silently: the caller must either
+ * empty the category first or pass `reassignTo` so its items are moved.
  */
 export const ownerDeleteCategory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -320,8 +306,7 @@ export const ownerDeleteCategory = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        reassignToCategoryId: z.string().uuid().nullable().optional(),
-        deleteItems: z.boolean().optional(),
+        reassignTo: z.string().uuid().nullable().optional(),
       })
       .parse(input),
   )
@@ -335,32 +320,29 @@ export const ownerDeleteCategory = createServerFn({ method: "POST" })
       .select("id", { count: "exact", head: true })
       .eq("category_id", data.id);
 
-    const itemCount = count ?? 0;
+    if ((count ?? 0) > 0) {
+      if (!data.reassignTo) {
+        throw new Error("Choose a category to move this category's items into first.");
+      }
+      if (data.reassignTo === data.id) {
+        throw new Error("Pick a different category to move the items into.");
+      }
 
-    if (itemCount > 0) {
-      if (data.reassignToCategoryId) {
-        if (data.reassignToCategoryId === data.id) {
-          throw new Error("Pick a different category to move the items to.");
-        }
-        const { error: moveError } = await supabaseAdmin
-          .from("products")
-          .update({ category_id: data.reassignToCategoryId })
-          .eq("category_id", data.id);
-        if (moveError) {
-          console.error("Reassign products failed", moveError);
-          throw new Error("We couldn't move this category's items. Please try again.");
-        }
-      } else if (data.deleteItems) {
-        const { error: purgeError } = await supabaseAdmin
-          .from("products")
-          .delete()
-          .eq("category_id", data.id);
-        if (purgeError) {
-          console.error("Delete category products failed", purgeError);
-          throw new Error("We couldn't delete this category's items. Please try again.");
-        }
-      } else {
-        throw new Error("Move or delete this category's items first.");
+      const { data: target } = await supabaseAdmin
+        .from("categories")
+        .select("id")
+        .eq("id", data.reassignTo)
+        .maybeSingle();
+      if (!target) throw new Error("That destination category no longer exists.");
+
+      const { error: moveError } = await supabaseAdmin
+        .from("products")
+        .update({ category_id: data.reassignTo })
+        .eq("category_id", data.id);
+
+      if (moveError) {
+        console.error("Reassign products failed", moveError);
+        throw new Error("We couldn't move this category's items. Nothing was deleted.");
       }
     }
 
@@ -369,35 +351,7 @@ export const ownerDeleteCategory = createServerFn({ method: "POST" })
       console.error("Delete category failed", error);
       throw new Error("We couldn't delete this category. Please try again.");
     }
-    return { ok: true, movedOrDeleted: itemCount };
-  });
-
-/** Bulk-move items between categories (owner only). */
-export const ownerMoveProducts = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z
-      .object({
-        productIds: z.array(z.string().uuid()).min(1).max(200),
-        categoryId: z.string().uuid(),
-      })
-      .parse(input),
-  )
-  .handler(async ({ data, context }) => {
-    const { assertOwner } = await import("@/lib/owner.server");
-    await assertOwner(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { error } = await supabaseAdmin
-      .from("products")
-      .update({ category_id: data.categoryId })
-      .in("id", data.productIds);
-
-    if (error) {
-      console.error("Move products failed", error);
-      throw new Error("We couldn't move these items. Please try again.");
-    }
-    return { ok: true };
+    return { ok: true, moved: count ?? 0 };
   });
 
 

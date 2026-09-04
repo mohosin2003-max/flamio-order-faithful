@@ -34,6 +34,7 @@ const TABS = [
   { to: "/owner", label: "Home", exact: true },
   { to: "/owner/orders", label: "Orders", exact: false },
   { to: "/owner/menu", label: "Menu", exact: false },
+  { to: "/owner/inventory", label: "Inventory", exact: false },
   { to: "/owner/settings", label: "Settings", exact: false },
 ] as const;
 

@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { Search } from "lucide-react";
 import { z } from "zod";
 
 import { ProductCard } from "@/components/menu/ProductCard";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
   category: z.string().optional(),
+  q: z.string().optional(),
 });
 
 export const Route = createFileRoute("/menu/")({
@@ -36,8 +38,14 @@ export const Route = createFileRoute("/menu/")({
 });
 
 function MenuPage() {
-  const { category } = Route.useSearch();
+  const { category, q } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { data: menu } = useSuspenseQuery(menuQueryOptions());
+  const query = (q ?? "").trim().toLowerCase();
+  const matches = (p: { name: string; description: string | null }) =>
+    !query ||
+    p.name.toLowerCase().includes(query) ||
+    (p.description ?? "").toLowerCase().includes(query);
 
   const activeCategory = menu.categories.find((c) => c.slug === category) ?? null;
   const visibleCategories = activeCategory ? [activeCategory] : menu.categories;
@@ -52,6 +60,27 @@ function MenuPage() {
           Everything is cooked when you order. Tap a dish for details.
         </p>
       </header>
+
+      <div className="relative mt-6 max-w-md">
+        <Search
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        />
+        <input
+          type="search"
+          value={q ?? ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            void navigate({
+              search: (prev) => ({ ...prev, q: value || undefined }),
+              replace: true,
+            });
+          }}
+          placeholder="Search the menu…"
+          aria-label="Search menu items"
+          className="w-full rounded-full border border-border bg-secondary py-2.5 pl-10 pr-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
+      </div>
 
       <nav aria-label="Menu categories" className="sticky top-16 z-40 -mx-4 mt-6 bg-background/90 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
         <ul className="flex gap-2 overflow-x-auto pb-1">
@@ -88,6 +117,15 @@ function MenuPage() {
         </ul>
       </nav>
 
+      {query && visibleCategories.every((c) => menu.products.filter((p) => p.categoryId === c.id && matches(p)).length === 0) ? (
+        <div className="mt-8">
+          <EmptyState
+            title="No matching items"
+            description={`Nothing on the menu matches “${q}”. Try another search.`}
+          />
+        </div>
+      ) : null}
+
       {category && !activeCategory ? (
         <div className="mt-8">
           <EmptyState
@@ -105,7 +143,8 @@ function MenuPage() {
       ) : (
         <div className="mt-8 space-y-12">
           {visibleCategories.map((c) => {
-            const items = menu.products.filter((p) => p.categoryId === c.id);
+            const items = menu.products.filter((p) => p.categoryId === c.id && matches(p));
+            if (query && items.length === 0) return null;
             return (
               <section key={c.id} aria-labelledby={`cat-${c.slug}`} className="scroll-mt-32">
                 <div className="flex items-baseline justify-between gap-4">

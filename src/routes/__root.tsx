@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { FloatingCartBar, FloatingCartSpacer } from "@/components/cart/FloatingCartBar";
+import { BottomNav, BottomNavSpacer } from "@/components/layout/BottomNav";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/context/cart";
 
@@ -133,8 +134,10 @@ function RootComponent() {
           </main>
           <FloatingCartSpacer />
           <SiteFooter />
+          <BottomNavSpacer />
         </div>
         <FloatingCartBar />
+        <BottomNav />
         <Toaster position="top-center" />
       </CartProvider>
     </QueryClientProvider>

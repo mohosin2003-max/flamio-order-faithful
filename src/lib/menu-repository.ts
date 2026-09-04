@@ -93,7 +93,7 @@ function mapCategory(c: RawCategory): Category {
     slug: c.slug,
     name: c.name,
     description: c.description,
-    imageUrl: c.image_url ?? placeholderByCategorySlug[c.slug] ?? burgerImg,
+    imageUrl: c.image_url ?? placeholderByCategorySlug[c.slug] ?? null,
     isVisible: c.is_visible,
     sortOrder: c.sort_order,
   };

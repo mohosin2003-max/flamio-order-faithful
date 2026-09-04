@@ -1,28 +1,37 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut, Menu, ShoppingBag, User, X } from "lucide-react";
+import { MoreVertical, Search } from "lucide-react";
 import { useState } from "react";
 
+import { LocationSelector, useCustomerLocation } from "@/components/layout/LocationSelector";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCart } from "@/context/cart";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
-
 
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/menu", label: "Menu" },
+  { to: "/offers", label: "Offers" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
   const { itemCount, isHydrated } = useCart();
-  const { isAuthenticated, profile, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const { location, setLocation } = useCustomerLocation();
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -31,16 +40,18 @@ export function SiteHeader() {
     void navigate({ to: "/auth", replace: true });
   }
 
-
   return (
+    <>
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2" aria-label="Flamio home">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-2 px-3 sm:px-6">
+        <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Flamio home">
           <span className="grid size-9 place-items-center rounded-xl bg-gradient-ember text-lg font-black text-primary-foreground">
             F
           </span>
           <span className="font-display text-xl font-extrabold tracking-tight">Flamio</span>
         </Link>
+
+        <LocationSelector location={location} onSelect={setLocation} />
 
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
@@ -56,139 +67,61 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          {!loading &&
-            (isAuthenticated ? (
-              <>
-                <NotificationBell />
-                <Button asChild variant="ghost" size="sm">
-                  <Link to="/account" aria-label="My account">
-                    <User aria-hidden="true" />
-                    <span className="hidden sm:inline">
-                      {profile?.fullName?.split(" ")[0] ?? "Account"}
-                    </span>
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleSignOut}
-                  aria-label="Sign out"
-                  className="hidden sm:inline-flex"
-                >
-                  <LogOut aria-hidden="true" />
-                </Button>
-              </>
-            ) : (
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/auth">
-                  <User aria-hidden="true" />
-                  <span className="hidden sm:inline">Sign in</span>
-                </Link>
-              </Button>
-            ))}
-
-          <Button asChild variant="secondary" size="sm" className="relative">
-            <Link to="/cart" aria-label={`Cart, ${isHydrated ? itemCount : 0} items`}>
-              <ShoppingBag aria-hidden="true" />
-              <span className="hidden sm:inline">Cart</span>
-              {isHydrated && itemCount > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 grid min-w-5 place-items-center rounded-full bg-gradient-ember px-1 text-xs font-bold text-primary-foreground">
-                  {itemCount}
-                </span>
-              )}
-            </Link>
-          </Button>
+        <div className="flex shrink-0 items-center gap-0.5">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
+            aria-label="Search the menu"
+            onClick={() => setSearchOpen(true)}
           >
-            {open ? <Menu aria-hidden="true" className="hidden" /> : null}
-            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            <Search aria-hidden="true" />
           </Button>
+
+          {!loading && isAuthenticated ? <NotificationBell /> : null}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="More options">
+                <MoreVertical aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              {navItems.map((item) => (
+                <DropdownMenuItem key={item.to} asChild>
+                  <Link to={item.to}>{item.label}</Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/cart">
+                  Cart{isHydrated && itemCount > 0 ? ` (${itemCount})` : ""}
+                </Link>
+              </DropdownMenuItem>
+              {!loading && isAuthenticated ? (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account/orders">My Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account/favorites">My Favorites</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account">My Account</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => void handleSignOut()}>Log out</DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem asChild>
+                  <Link to="/auth">Sign in</Link>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
-      <div
-        className={cn(
-          "grid overflow-hidden border-t border-border/60 transition-smooth md:hidden",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr] border-transparent",
-        )}
-      >
-        <nav aria-label="Mobile" className="min-h-0">
-          <ul className="flex flex-col gap-1 p-3">
-            {navItems.map((item) => (
-              <li key={item.to}>
-                <Link
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-lg px-3 py-3 text-base font-medium text-muted-foreground transition-smooth hover:bg-secondary hover:text-foreground"
-                  activeProps={{ className: "text-foreground bg-secondary" }}
-                  activeOptions={{ exact: item.to === "/" }}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-            {isAuthenticated ? (
-              <>
-                <li>
-                  <Link
-                    to="/account/orders"
-                    onClick={() => setOpen(false)}
-                    className="block rounded-lg px-3 py-3 text-base font-medium text-muted-foreground transition-smooth hover:bg-secondary hover:text-foreground"
-                  >
-                    My Orders
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/account/favorites"
-                    onClick={() => setOpen(false)}
-                    className="block rounded-lg px-3 py-3 text-base font-medium text-muted-foreground transition-smooth hover:bg-secondary hover:text-foreground"
-                  >
-                    My Favorites
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/account/notifications"
-                    onClick={() => setOpen(false)}
-                    className="block rounded-lg px-3 py-3 text-base font-medium text-muted-foreground transition-smooth hover:bg-secondary hover:text-foreground"
-                  >
-                    Notifications
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/account"
-                    onClick={() => setOpen(false)}
-                    className="block rounded-lg px-3 py-3 text-base font-medium text-muted-foreground transition-smooth hover:bg-secondary hover:text-foreground"
-                  >
-                    My Account
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false);
-                      void handleSignOut();
-                    }}
-                    className="block w-full rounded-lg px-3 py-3 text-left text-base font-medium text-muted-foreground transition-smooth hover:bg-secondary hover:text-foreground"
-                  >
-                    Log out
-                  </button>
-                </li>
-              </>
-            ) : null}
-          </ul>
-        </nav>
-      </div>
     </header>
+    <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }

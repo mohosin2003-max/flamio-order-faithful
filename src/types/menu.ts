@@ -170,6 +170,12 @@ export interface CustomerAddress {
   isDefault: boolean;
 }
 
+export interface CustomerLocation {
+  label: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export interface CheckoutDraft {
   fulfillment: FulfillmentType;
   paymentMethod: PaymentMethodId;

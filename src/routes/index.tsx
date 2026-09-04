@@ -1,12 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Flame } from "lucide-react";
 
-import heroImage from "@/assets/hero-flamio.jpg";
+import { HomeCarousel } from "@/components/home/HomeCarousel";
 import { LocationSection } from "@/components/home/LocationSection";
 import { PromoBannerArea } from "@/components/home/PromoBannerArea";
 import { ProductCard } from "@/components/menu/ProductCard";
-import { Button } from "@/components/ui/button";
 import { menuQueryOptions, restaurantQueryOptions } from "@/lib/menu-repository";
 
 export const Route = createFileRoute("/")({
@@ -36,89 +34,52 @@ function HomePage() {
   const { data: menu } = useSuspenseQuery(menuQueryOptions());
   const { data: info } = useSuspenseQuery(restaurantQueryOptions());
 
-  const featured = menu.products.filter((p) => p.isFeatured).slice(0, 4);
-  const popular = menu.products.filter((p) => p.isPopular).slice(0, 8);
+  const featured = menu.products.filter((p) => p.isFeatured);
+  const popular = menu.products.filter((p) => p.isPopular);
+  const carouselProducts = (featured.length ? featured : popular.length ? popular : menu.products).slice(0, 5);
+  const showcase = (popular.length ? popular : menu.products).slice(0, 8);
 
   return (
     <>
-      <section className="relative overflow-hidden">
-        <img
-          src={heroImage}
-          alt="Flame-grilled Flamio burger"
-          width={1600}
-          height={1200}
-          fetchPriority="high"
-          className="absolute inset-0 size-full object-cover opacity-45"
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: "var(--gradient-fade)" }}
-          aria-hidden="true"
-        />
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-4 pb-20 pt-20 sm:px-6 sm:pb-28 sm:pt-28">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-background/60 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
-            <Flame aria-hidden="true" className="size-3.5" />
-            Kishoreganj Sadar
-          </span>
-          <h1 className="max-w-2xl font-display text-4xl font-black leading-[1.05] sm:text-6xl">
-            Flame-grilled food, <span className="text-gradient-ember">made to order</span> at Flamio.
-          </h1>
-          <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
-            {info.restaurant.tagline} Burgers, meat boxes, pizza, pasta and shawarma — hot off the
-            grill.
-          </p>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <Button asChild size="lg" className="shadow-ember">
-              <Link to="/menu">
-                Order Now
-                <ArrowRight aria-hidden="true" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="secondary">
-              <Link to="/contact">Visit us</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <PromoBannerArea banners={info.banners} />
+      <HomeCarousel banners={info.banners} products={carouselProducts} />
 
       <section
         aria-labelledby="categories-heading"
-        className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6"
+        className="mx-auto w-full max-w-6xl px-4 pt-8 sm:px-6"
       >
         <div className="flex items-end justify-between gap-4">
-          <h2 id="categories-heading" className="font-display text-2xl font-extrabold sm:text-3xl">
-            Browse the menu
+          <h2 id="categories-heading" className="font-display text-xl font-extrabold sm:text-2xl">
+            Categories
           </h2>
           <Link
             to="/menu"
+            search={{}}
             className="text-sm font-medium text-primary transition-smooth hover:opacity-80"
           >
             See all
           </Link>
         </div>
-        <ul className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <ul className="mt-4 flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {menu.categories.map((category) => (
-            <li key={category.id}>
+            <li key={category.id} className="w-32 shrink-0 sm:w-40">
               <Link
                 to="/menu"
                 search={{ category: category.slug }}
-                className="group relative block aspect-square overflow-hidden rounded-2xl border border-border/70 shadow-card"
+                className="group block overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card"
               >
-                {category.imageUrl ? (
-                  <img
-                    src={category.imageUrl}
-                    alt={category.name}
-                    loading="lazy"
-                    width={800}
-                    height={800}
-                    className="size-full object-cover opacity-70 transition-smooth group-hover:scale-105 group-hover:opacity-90"
-                  />
-                ) : (
-                  <div className="size-full bg-muted" />
-                )}
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background to-transparent p-3 font-display text-sm font-bold sm:text-base">
+                <span className="block aspect-[4/3] overflow-hidden">
+                  {category.imageUrl ? (
+                    <img
+                      src={category.imageUrl}
+                      alt={category.name}
+                      loading="lazy"
+                      className="size-full object-cover opacity-80 transition-smooth group-hover:scale-105"
+                    />
+                  ) : (
+                    <span className="block size-full bg-muted" />
+                  )}
+                </span>
+                <span className="block truncate p-2 text-center text-sm font-semibold">
                   {category.name}
                 </span>
               </Link>
@@ -127,39 +88,61 @@ function HomePage() {
         </ul>
       </section>
 
-      {featured.length > 0 && (
-        <section
-          aria-labelledby="featured-heading"
-          className="mx-auto w-full max-w-6xl px-4 pb-14 sm:px-6"
-        >
-          <h2 id="featured-heading" className="font-display text-2xl font-extrabold sm:text-3xl">
-            Featured
-          </h2>
-          <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {featured.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {popular.length > 0 && (
+      {showcase.length > 0 && (
         <section
           aria-labelledby="popular-heading"
-          className="mx-auto w-full max-w-6xl px-4 pb-6 sm:px-6"
+          className="mx-auto w-full max-w-6xl px-4 pt-8 sm:px-6"
         >
-          <h2 id="popular-heading" className="font-display text-2xl font-extrabold sm:text-3xl">
-            Popular right now
-          </h2>
-          <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {popular.map((product) => (
+          <div className="flex items-end justify-between gap-4">
+            <h2 id="popular-heading" className="font-display text-xl font-extrabold sm:text-2xl">
+              Popular
+            </h2>
+            <Link
+              to="/menu"
+              search={{}}
+              className="text-sm font-medium text-primary transition-smooth hover:opacity-80"
+            >
+              Full menu
+            </Link>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {showcase.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
       )}
 
-      <LocationSection restaurant={info.restaurant} />
+      <section aria-labelledby="offers-heading" className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6">
+        <div className="flex items-end justify-between gap-4">
+          <h2 id="offers-heading" className="font-display text-xl font-extrabold sm:text-2xl">
+            Offers
+          </h2>
+          <Link
+            to="/offers"
+            className="text-sm font-medium text-primary transition-smooth hover:opacity-80"
+          >
+            See offers
+          </Link>
+        </div>
+        <div className="mt-4">
+          {info.banners.length > 0 ? (
+            <PromoBannerArea banners={info.banners} />
+          ) : featured.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {featured.slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No offers running right now.</p>
+          )}
+        </div>
+      </section>
+
+      <div className="pt-10">
+        <LocationSection restaurant={info.restaurant} />
+      </div>
     </>
   );
 }
