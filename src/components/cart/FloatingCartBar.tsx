@@ -18,7 +18,7 @@ export function FloatingCartBar() {
     <div
       aria-hidden={!visible}
       className={cn(
-        "pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-smooth md:inset-x-auto md:right-6 md:bottom-6 md:px-0",
+        "pointer-events-none fixed inset-x-0 bottom-16 z-50 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-smooth md:inset-x-auto md:right-6 md:bottom-6 md:px-0",
         visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
       )}
     >

@@ -138,6 +138,14 @@ export const placeOrder = createServerFn({ method: "POST" })
       throw new Error("We couldn't save your order items. Please try again.");
     }
 
+    // Ingredient stock is consumed only after the order and its items are
+    // safely stored. The DB function is idempotent per order, so a retry can
+    // never reduce stock twice, and failures here never block the order.
+    const { error: stockError } = await supabaseAdmin.rpc("consume_inventory_for_order", {
+      _order_id: inserted.id,
+    });
+    if (stockError) console.error("Inventory consumption failed", stockError);
+
     return { id: inserted.id, code: inserted.code, createdAt: inserted.created_at };
   });
 

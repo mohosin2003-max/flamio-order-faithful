@@ -1,0 +1,13 @@
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.customer_addresses TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.favorites TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.notifications TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.orders TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.order_items TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
+GRANT SELECT ON public.categories TO authenticated, anon;
+GRANT SELECT ON public.products TO authenticated, anon;
+GRANT SELECT ON public.product_variants TO authenticated, anon;
+GRANT SELECT ON public.product_images TO authenticated, anon;
+GRANT SELECT, INSERT ON public.orders TO anon;
+GRANT SELECT, INSERT ON public.order_items TO anon;
+GRANT ALL ON public.customer_addresses, public.favorites, public.notifications, public.orders, public.order_items, public.profiles, public.categories, public.products, public.product_variants, public.product_images TO service_role;

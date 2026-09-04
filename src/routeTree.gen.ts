@@ -16,6 +16,8 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as OffersRouteImport } from './routes/offers'
+import { Route as AuthenticatedKitchenRouteImport } from './routes/_authenticated/kitchen'
 import { Route as AuthenticatedOwnerRouteImport } from './routes/_authenticated/owner'
 import { Route as MenuIndexRouteImport } from './routes/menu.index'
 import { Route as MenuProductSlugRouteImport } from './routes/menu.$productSlug'
@@ -27,6 +29,7 @@ import { Route as AuthenticatedAccountFavoritesRouteImport } from './routes/_aut
 import { Route as AuthenticatedAccountNotificationsRouteImport } from './routes/_authenticated/account.notifications'
 import { Route as AuthenticatedAccountOrdersRouteImport } from './routes/_authenticated/account.orders'
 import { Route as AuthenticatedOwnerIndexRouteImport } from './routes/_authenticated/owner.index'
+import { Route as AuthenticatedOwnerInventoryRouteImport } from './routes/_authenticated/owner.inventory'
 import { Route as AuthenticatedOwnerMenuRouteImport } from './routes/_authenticated/owner.menu'
 import { Route as AuthenticatedOwnerOrdersRouteImport } from './routes/_authenticated/owner.orders'
 import { Route as AuthenticatedOwnerSettingsRouteImport } from './routes/_authenticated/owner.settings'
@@ -64,6 +67,16 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedKitchenRoute = AuthenticatedKitchenRouteImport.update({
+  id: '/kitchen',
+  path: '/kitchen',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOwnerRoute = AuthenticatedOwnerRouteImport.update({
   id: '/owner',
@@ -125,6 +138,12 @@ const AuthenticatedOwnerIndexRoute = AuthenticatedOwnerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedOwnerRoute,
 } as any)
+const AuthenticatedOwnerInventoryRoute =
+  AuthenticatedOwnerInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedOwnerRoute,
+  } as any)
 const AuthenticatedOwnerMenuRoute = AuthenticatedOwnerMenuRouteImport.update({
   id: '/menu',
   path: '/menu',
@@ -150,6 +169,8 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/offers': typeof OffersRoute
+  '/kitchen': typeof AuthenticatedKitchenRoute
   '/owner': typeof AuthenticatedOwnerRouteWithChildren
   '/menu/$productSlug': typeof MenuProductSlugRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -159,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/account/favorites': typeof AuthenticatedAccountFavoritesRoute
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/account/orders': typeof AuthenticatedAccountOrdersRoute
+  '/owner/inventory': typeof AuthenticatedOwnerInventoryRoute
   '/owner/menu': typeof AuthenticatedOwnerMenuRoute
   '/owner/orders': typeof AuthenticatedOwnerOrdersRoute
   '/owner/settings': typeof AuthenticatedOwnerSettingsRoute
@@ -172,6 +194,8 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/offers': typeof OffersRoute
+  '/kitchen': typeof AuthenticatedKitchenRoute
   '/menu/$productSlug': typeof MenuProductSlugRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/track/$orderId': typeof TrackOrderIdRoute
@@ -180,6 +204,7 @@ export interface FileRoutesByTo {
   '/account/favorites': typeof AuthenticatedAccountFavoritesRoute
   '/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/account/orders': typeof AuthenticatedAccountOrdersRoute
+  '/owner/inventory': typeof AuthenticatedOwnerInventoryRoute
   '/owner/menu': typeof AuthenticatedOwnerMenuRoute
   '/owner/orders': typeof AuthenticatedOwnerOrdersRoute
   '/owner/settings': typeof AuthenticatedOwnerSettingsRoute
@@ -195,6 +220,8 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/offers': typeof OffersRoute
+  '/_authenticated/kitchen': typeof AuthenticatedKitchenRoute
   '/_authenticated/owner': typeof AuthenticatedOwnerRouteWithChildren
   '/menu/$productSlug': typeof MenuProductSlugRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -204,6 +231,7 @@ export interface FileRoutesById {
   '/_authenticated/account/favorites': typeof AuthenticatedAccountFavoritesRoute
   '/_authenticated/account/notifications': typeof AuthenticatedAccountNotificationsRoute
   '/_authenticated/account/orders': typeof AuthenticatedAccountOrdersRoute
+  '/_authenticated/owner/inventory': typeof AuthenticatedOwnerInventoryRoute
   '/_authenticated/owner/menu': typeof AuthenticatedOwnerMenuRoute
   '/_authenticated/owner/orders': typeof AuthenticatedOwnerOrdersRoute
   '/_authenticated/owner/settings': typeof AuthenticatedOwnerSettingsRoute
@@ -219,6 +247,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/forgot-password'
+    | '/offers'
+    | '/kitchen'
     | '/owner'
     | '/menu/$productSlug'
     | '/order/$orderId'
@@ -228,6 +258,7 @@ export interface FileRouteTypes {
     | '/account/favorites'
     | '/account/notifications'
     | '/account/orders'
+    | '/owner/inventory'
     | '/owner/menu'
     | '/owner/orders'
     | '/owner/settings'
@@ -241,6 +272,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/forgot-password'
+    | '/offers'
+    | '/kitchen'
     | '/menu/$productSlug'
     | '/order/$orderId'
     | '/track/$orderId'
@@ -249,6 +282,7 @@ export interface FileRouteTypes {
     | '/account/favorites'
     | '/account/notifications'
     | '/account/orders'
+    | '/owner/inventory'
     | '/owner/menu'
     | '/owner/orders'
     | '/owner/settings'
@@ -263,6 +297,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/forgot-password'
+    | '/offers'
+    | '/_authenticated/kitchen'
     | '/_authenticated/owner'
     | '/menu/$productSlug'
     | '/order/$orderId'
@@ -272,6 +308,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account/favorites'
     | '/_authenticated/account/notifications'
     | '/_authenticated/account/orders'
+    | '/_authenticated/owner/inventory'
     | '/_authenticated/owner/menu'
     | '/_authenticated/owner/orders'
     | '/_authenticated/owner/settings'
@@ -287,6 +324,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  OffersRoute: typeof OffersRoute
   MenuProductSlugRoute: typeof MenuProductSlugRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
   TrackOrderIdRoute: typeof TrackOrderIdRoute
@@ -343,6 +381,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/kitchen': {
+      id: '/_authenticated/kitchen'
+      path: '/kitchen'
+      fullPath: '/kitchen'
+      preLoaderRoute: typeof AuthenticatedKitchenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/owner': {
       id: '/_authenticated/owner'
@@ -421,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOwnerIndexRouteImport
       parentRoute: typeof AuthenticatedOwnerRoute
     }
+    '/_authenticated/owner/inventory': {
+      id: '/_authenticated/owner/inventory'
+      path: '/inventory'
+      fullPath: '/owner/inventory'
+      preLoaderRoute: typeof AuthenticatedOwnerInventoryRouteImport
+      parentRoute: typeof AuthenticatedOwnerRoute
+    }
     '/_authenticated/owner/menu': {
       id: '/_authenticated/owner/menu'
       path: '/menu'
@@ -446,6 +505,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedOwnerRouteChildren {
+  AuthenticatedOwnerInventoryRoute: typeof AuthenticatedOwnerInventoryRoute
   AuthenticatedOwnerMenuRoute: typeof AuthenticatedOwnerMenuRoute
   AuthenticatedOwnerOrdersRoute: typeof AuthenticatedOwnerOrdersRoute
   AuthenticatedOwnerSettingsRoute: typeof AuthenticatedOwnerSettingsRoute
@@ -453,6 +513,7 @@ interface AuthenticatedOwnerRouteChildren {
 }
 
 const AuthenticatedOwnerRouteChildren: AuthenticatedOwnerRouteChildren = {
+  AuthenticatedOwnerInventoryRoute: AuthenticatedOwnerInventoryRoute,
   AuthenticatedOwnerMenuRoute: AuthenticatedOwnerMenuRoute,
   AuthenticatedOwnerOrdersRoute: AuthenticatedOwnerOrdersRoute,
   AuthenticatedOwnerSettingsRoute: AuthenticatedOwnerSettingsRoute,
@@ -463,6 +524,7 @@ const AuthenticatedOwnerRouteWithChildren =
   AuthenticatedOwnerRoute._addFileChildren(AuthenticatedOwnerRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedKitchenRoute: typeof AuthenticatedKitchenRoute
   AuthenticatedOwnerRoute: typeof AuthenticatedOwnerRouteWithChildren
   AuthenticatedAccountAddressesRoute: typeof AuthenticatedAccountAddressesRoute
   AuthenticatedAccountFavoritesRoute: typeof AuthenticatedAccountFavoritesRoute
@@ -472,6 +534,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedKitchenRoute: AuthenticatedKitchenRoute,
   AuthenticatedOwnerRoute: AuthenticatedOwnerRouteWithChildren,
   AuthenticatedAccountAddressesRoute: AuthenticatedAccountAddressesRoute,
   AuthenticatedAccountFavoritesRoute: AuthenticatedAccountFavoritesRoute,
@@ -492,6 +555,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  OffersRoute: OffersRoute,
   MenuProductSlugRoute: MenuProductSlugRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
   TrackOrderIdRoute: TrackOrderIdRoute,
