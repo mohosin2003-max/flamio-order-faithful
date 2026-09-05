@@ -660,6 +660,56 @@ export type Database = {
         }
         Relationships: []
       }
+      purchases: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          item_id: string
+          note: string | null
+          purchased_on: string
+          quantity: number
+          supplier_name: string
+          total_price: number
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id: string
+          note?: string | null
+          purchased_on?: string
+          quantity: number
+          supplier_name: string
+          total_price?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          note?: string | null
+          purchased_on?: string
+          quantity?: number
+          supplier_name?: string
+          total_price?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_tokens: {
         Row: {
           created_at: string
@@ -698,6 +748,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          inventory_mode: string
           is_open: boolean
           name: string
           phone: string | null
@@ -711,6 +762,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          inventory_mode?: string
           is_open?: boolean
           name?: string
           phone?: string | null
@@ -724,6 +776,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          inventory_mode?: string
           is_open?: boolean
           name?: string
           phone?: string | null
